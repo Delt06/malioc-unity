@@ -309,7 +309,7 @@ public class MaliocToolWindow : EditorWindow
                 StartInfo = new ProcessStartInfo
                 {
                     Arguments =
-                        $"/K -c Mali-G76 -{stageFlag} {shaderFilePath}",
+                        $"-c Mali-G76 -{stageFlag} {shaderFilePath}",
                     FileName = "malioc.exe",
                     CreateNoWindow = true,
                     RedirectStandardOutput = true,
@@ -325,7 +325,7 @@ public class MaliocToolWindow : EditorWindow
                 string line = process.StandardOutput.ReadLine();
                 metrics.Add(line);
             }
-            
+
             File.Delete(shaderFilePath);
 
             string[] metricsLines = metrics.ToArray();
