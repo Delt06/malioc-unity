@@ -118,6 +118,7 @@ namespace DELTation.MaliOfflineCompiler.Editor.Compilation
         {
             var ifRegex = new Regex(@"\A\s*#if");
             var endifRegex = new Regex(@"\A\s*#endif");
+            var esVersionRegex = new Regex(@"\A#version ([0-9]+) es\z");
 
             // #ifdef STAGE is already found
             int nesting = 1;
@@ -134,14 +135,33 @@ namespace DELTation.MaliOfflineCompiler.Editor.Compilation
                     nesting--;
                 }
 
-                if (nesting == 0)
+                if (nesting != 0)
                 {
-                    int fromLineIndex = ifdefLineIndex + 1;
-                    int stageCodeSize = lineIndex - fromLineIndex;
-                    string[] stageCode = new string[stageCodeSize];
-                    Array.Copy(lines, fromLineIndex, stageCode, 0, stageCodeSize);
-                    return stageCode;
+                    continue;
                 }
+
+                int fromLineIndex = ifdefLineIndex + 1;
+                int stageCodeSize = lineIndex - fromLineIndex;
+                string[] stageCode = new string[stageCodeSize];
+                Array.Copy(lines, fromLineIndex, stageCode, 0, stageCodeSize);
+
+                for (int stageCodeLineIndex = 0; stageCodeLineIndex < stageCode.Length; stageCodeLineIndex++)
+                {
+                    ref string stageCodeLine = ref stageCode[stageCodeLineIndex];
+                    Match match = esVersionRegex.Match(stageCodeLine);
+                    if (!match.Success)
+                    {
+                        continue;
+                    }
+
+                    int version = int.Parse(match.Groups[1].Value);
+                    if (version <= 300)
+                    {
+                        stageCodeLine = "#version 310 es";
+                    }
+                }
+
+                return stageCode;
             }
 
             throw new ArgumentException($"Could not find #endif for #ifdef at line {ifdefLineIndex + 1}");
