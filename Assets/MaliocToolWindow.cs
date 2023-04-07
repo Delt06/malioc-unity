@@ -325,6 +325,8 @@ public class MaliocToolWindow : EditorWindow
                 string line = process.StandardOutput.ReadLine();
                 metrics.Add(line);
             }
+            
+            File.Delete(shaderFilePath);
 
             string[] metricsLines = metrics.ToArray();
             switch (shaderStage.StageType)
