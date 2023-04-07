@@ -281,10 +281,10 @@ public class MaliocToolWindow : EditorWindow
         GUILayout.EndHorizontal();
     }
 
-    [MenuItem("Window/Analysis/Malioc")]
+    [MenuItem("Window/Analysis/Mali Offline Compiler")]
     public static void Run()
     {
-        CreateWindow<MaliocToolWindow>("Malioc");
+        CreateWindow<MaliocToolWindow>("Mali Offline Compiler");
     }
 
     private static void ComputeMetrics(ref CompiledShaderVariant variant)
