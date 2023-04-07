@@ -373,7 +373,53 @@ namespace Malioc
             string compiledShaderName = "Compiled-" + shader.name.Replace('/', '-') + ".shader";
             string[] lines = File.ReadAllLines(Path.Combine(Application.dataPath, "..", "Temp", compiledShaderName));
 
+            CompiledShader oldCompiledShader = _compiledShader;
             _compiledShader = CompiledShaderParser.Parse(lines);
+
+            // transfer Expanded values
+            if (oldCompiledShader.IsValid && HaveAllSameKeywords(oldCompiledShader, _compiledShader))
+            {
+                for (int i = 0; i < _compiledShader.Variants.Length; i++)
+                {
+                    _compiledShader.Variants[i].Expanded = oldCompiledShader.Variants[i].Expanded;
+                }
+            }
+        }
+
+        private bool HaveAllSameKeywords(in CompiledShader shader1, in CompiledShader shader2)
+        {
+            if (shader1.Variants.Length != shader2.Variants.Length)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < shader1.Variants.Length; i++)
+            {
+                if (!HaveSameKeywords(shader1.Variants[i], shader2.Variants[i]))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private bool HaveSameKeywords(in CompiledShaderVariant variant1, in CompiledShaderVariant variant2)
+        {
+            if (variant1.Keywords.Length != variant2.Keywords.Length)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < variant1.Keywords.Length; i++)
+            {
+                if (variant1.Keywords[i] != variant2.Keywords[i])
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }
