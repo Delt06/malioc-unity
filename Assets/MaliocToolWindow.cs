@@ -11,8 +11,6 @@ public class MaliocToolWindow : EditorWindow
 {
     private const int PlatformMask = 1 << (int) ShaderCompilerPlatform.GLES3x;
 
-    private const string MaliocPath =
-        "C:\\Program Files\\Arm\\Arm Mobile Studio 2021.1\\mali_offline_compiler\\malioc.exe";
     private const string CyclesFloatFormat = "F2";
 
     [SerializeField]
@@ -311,8 +309,8 @@ public class MaliocToolWindow : EditorWindow
                 StartInfo = new ProcessStartInfo
                 {
                     Arguments =
-                        $"/K \"{MaliocPath}\" -c Mali-G76 -{stageFlag} {shaderFilePath}",
-                    FileName = "cmd.exe",
+                        $"/K -c Mali-G76 -{stageFlag} {shaderFilePath}",
+                    FileName = "malioc.exe",
                     CreateNoWindow = true,
                     RedirectStandardOutput = true,
                     UseShellExecute = false,
