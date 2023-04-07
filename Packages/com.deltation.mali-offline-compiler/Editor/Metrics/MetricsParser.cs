@@ -38,6 +38,7 @@ namespace DELTation.MaliOfflineCompiler.Editor.Metrics
                 {
                     "Position variant" => VertexShaderMetricsSection.PositionVariant,
                     "Varying variant" => VertexShaderMetricsSection.VaryingVariant,
+                    "Main shader" => VertexShaderMetricsSection.Main,
                     "Shader properties" => VertexShaderMetricsSection.ShaderProperties,
                     _ => metricsSection,
                 };
@@ -48,11 +49,18 @@ namespace DELTation.MaliOfflineCompiler.Editor.Metrics
                         break;
                     case VertexShaderMetricsSection.PositionVariant:
                     case VertexShaderMetricsSection.VaryingVariant:
+                    case VertexShaderMetricsSection.Main:
                     {
                         // read
-                        VertexShaderVariantMetrics variant = metricsSection == VertexShaderMetricsSection.PositionVariant
-                            ? metrics.PositionVariant
-                            : metrics.VaryingVariant;
+                        VertexShaderVariantMetrics variant = metricsSection switch
+                        {
+                            VertexShaderMetricsSection.PositionVariant => metrics.PositionVariant,
+                            VertexShaderMetricsSection.VaryingVariant => metrics.VaryingVariant,
+                            VertexShaderMetricsSection.Main => metrics.Main,
+                            VertexShaderMetricsSection.None => throw new ArgumentOutOfRangeException(),
+                            VertexShaderMetricsSection.ShaderProperties => throw new ArgumentOutOfRangeException(),
+                            _ => throw new ArgumentOutOfRangeException(),
+                        };
 
                         // update
                         if (TryParseInt(line, WorkRegistersRegex, out int workRegisters))
@@ -101,15 +109,22 @@ namespace DELTation.MaliOfflineCompiler.Editor.Metrics
                             }
                         }
 
-
                         // write back
-                        if (metricsSection == VertexShaderMetricsSection.PositionVariant)
+                        switch (metricsSection)
                         {
-                            metrics.PositionVariant = variant;
-                        }
-                        else
-                        {
-                            metrics.VaryingVariant = variant;
+                            case VertexShaderMetricsSection.PositionVariant:
+                                metrics.PositionVariant = variant;
+                                break;
+                            case VertexShaderMetricsSection.VaryingVariant:
+                                metrics.VaryingVariant = variant;
+                                break;
+                            case VertexShaderMetricsSection.Main:
+                                metrics.Main = variant;
+                                break;
+                            case VertexShaderMetricsSection.None:
+                            case VertexShaderMetricsSection.ShaderProperties:
+                            default:
+                                throw new ArgumentOutOfRangeException();
                         }
 
                         break;
@@ -181,7 +196,7 @@ namespace DELTation.MaliOfflineCompiler.Editor.Metrics
                 }
                 else
                 {
-                    ref PixelShaderVariantMetrics variant = ref metrics.Variant;
+                    ref PixelShaderVariantMetrics variant = ref metrics.Main;
 
                     if (TryParseInt(line, WorkRegistersRegex, out int workRegisters))
                     {
@@ -271,6 +286,7 @@ namespace DELTation.MaliOfflineCompiler.Editor.Metrics
             None,
             PositionVariant,
             VaryingVariant,
+            Main,
             ShaderProperties,
         }
     }

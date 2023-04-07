@@ -5,7 +5,7 @@ namespace DELTation.MaliOfflineCompiler.Editor.Metrics
     [Serializable]
     public struct PixelShaderMetrics
     {
-        public PixelShaderVariantMetrics Variant;
+        public PixelShaderVariantMetrics Main;
         public bool HasUniformComputation;
         public bool HasSideEffects;
         public bool ModifiesCoverage;

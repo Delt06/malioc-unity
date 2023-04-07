@@ -127,6 +127,7 @@ namespace DELTation.MaliOfflineCompiler.Editor
         private void DrawVertexShaderMetrics(in VertexShaderMetrics metrics)
         {
             GUILayout.BeginHorizontal();
+            DrawVertexShaderVariantMetrics("Main shader", metrics.Main);
             DrawVertexShaderVariantMetrics("Position variant", metrics.PositionVariant);
             DrawVertexShaderVariantMetrics("Varying variant", metrics.VaryingVariant);
             GUILayout.FlexibleSpace();
@@ -137,7 +138,7 @@ namespace DELTation.MaliOfflineCompiler.Editor
         private void DrawPixelShaderMetrics(in PixelShaderMetrics metrics)
         {
             GUILayout.BeginHorizontal();
-            DrawPixelShaderVariantMetrics("Main variant", metrics.Variant);
+            DrawPixelShaderVariantMetrics("Main shader", metrics.Main);
             GUILayout.FlexibleSpace();
             DrawPixelShaderProperties(metrics);
             GUILayout.EndHorizontal();
@@ -145,6 +146,11 @@ namespace DELTation.MaliOfflineCompiler.Editor
 
         private void DrawVertexShaderVariantMetrics(string header, in VertexShaderVariantMetrics metrics)
         {
+            if (metrics.WorkRegisters == 0)
+            {
+                return;
+            }
+
             GUILayout.BeginVertical();
             GUILayout.Box(header, _boxStyle);
 
