@@ -1,4 +1,4 @@
-﻿namespace Malioc.Metrics
+﻿namespace DELTation.MaliOfflineCompiler.Editor.Metrics
 {
     public enum InstructionCycleType
     {

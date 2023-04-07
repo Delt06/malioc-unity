@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-using Malioc.Compilation;
-using Malioc.Metrics;
+using DELTation.MaliOfflineCompiler.Editor.Compilation;
+using DELTation.MaliOfflineCompiler.Editor.Metrics;
 using UnityEditor;
 using UnityEditor.Rendering;
 using UnityEngine;
 
-namespace Malioc
+namespace DELTation.MaliOfflineCompiler.Editor
 {
     public class MaliocToolWindow : EditorWindow
     {

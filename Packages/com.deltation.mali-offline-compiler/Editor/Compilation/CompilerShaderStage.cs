@@ -1,7 +1,7 @@
 ﻿using System;
-using Malioc.Metrics;
+using DELTation.MaliOfflineCompiler.Editor.Metrics;
 
-namespace Malioc.Compilation
+namespace DELTation.MaliOfflineCompiler.Editor.Compilation
 {
     [Serializable]
     public struct CompilerShaderStage

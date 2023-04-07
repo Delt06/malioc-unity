@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Malioc.Compilation
+namespace DELTation.MaliOfflineCompiler.Editor.Compilation
 {
     [Serializable]
     public struct CompiledShaderVariant

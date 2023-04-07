@@ -1,4 +1,4 @@
-﻿namespace Malioc.Compilation
+﻿namespace DELTation.MaliOfflineCompiler.Editor.Compilation
 {
     public enum CompiledShaderStageType
     {

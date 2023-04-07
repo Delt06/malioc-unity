@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine.Assertions;
 
-namespace Malioc.Compilation
+namespace DELTation.MaliOfflineCompiler.Editor.Compilation
 {
     public class CompiledShaderParser
     {

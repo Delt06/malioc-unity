@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Malioc.Metrics
+namespace DELTation.MaliOfflineCompiler.Editor.Metrics
 {
     [Serializable]
     public struct PixelShaderVariantMetrics

@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Text.RegularExpressions;
 
-namespace Malioc.Metrics
+namespace DELTation.MaliOfflineCompiler.Editor.Metrics
 {
     public class MetricsParser
     {
