@@ -6,6 +6,7 @@ namespace DELTation.MaliOfflineCompiler.Editor.Compilation
     public struct CompiledShader
     {
         public CompiledShaderVariant[] Variants;
+        public string Name;
         public bool IsValid;
     }
 }

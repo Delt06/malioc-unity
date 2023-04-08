@@ -2,18 +2,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using UnityEngine;
 using UnityEngine.Assertions;
 
 namespace DELTation.MaliOfflineCompiler.Editor.Compilation
 {
-    public class CompiledShaderParser
+    public static class CompiledShaderParser
     {
-        public static CompiledShader Parse(string[] lines)
+        public static CompiledShader Parse(Shader shader, string[] lines)
         {
             var compiledShader = new CompiledShader
             {
                 Variants = FindVariants(lines).Select(v => ParseVariant(lines, v)).ToArray(),
                 IsValid = true,
+                Name = shader.name,
             };
             return compiledShader;
         }
