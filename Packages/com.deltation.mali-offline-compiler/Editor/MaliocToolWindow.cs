@@ -26,6 +26,7 @@ namespace DELTation.MaliOfflineCompiler.Editor
         [SerializeField]
         private Vector2 _scrollPosition = Vector2.zero;
         private GUIStyle _boxStyle;
+        private bool[] _expanded;
         private GUIStyle _foldoutStyle;
 
         private void OnGUI()
@@ -63,6 +64,8 @@ namespace DELTation.MaliOfflineCompiler.Editor
 
             _scrollPosition = GUILayout.BeginScrollView(_scrollPosition, false, true);
 
+            _expanded ??= new bool[_compiledShader.Variants.Length];
+
             for (int index = 0; index < _compiledShader.Variants.Length; index++)
             {
                 ref CompiledShaderVariant variant = ref _compiledShader.Variants[index];
@@ -74,9 +77,10 @@ namespace DELTation.MaliOfflineCompiler.Editor
 
                 string label = "Keywords: " +
                                (variant.Keywords.Length == 0 ? "<none>" : string.Join(' ', variant.Keywords));
-                variant.Expanded = EditorGUILayout.Foldout(variant.Expanded, label, _foldoutStyle);
+                ref bool expanded = ref _expanded[index];
+                expanded = EditorGUILayout.Foldout(expanded, label, _foldoutStyle);
 
-                if (variant.Expanded)
+                if (expanded)
                 {
                     if (!variant.ComputedMetrics)
                     {
@@ -89,7 +93,6 @@ namespace DELTation.MaliOfflineCompiler.Editor
                         DrawMetrics(stage);
                     }
                 }
-
 
                 GUILayout.Space(8);
             }
@@ -382,12 +385,16 @@ namespace DELTation.MaliOfflineCompiler.Editor
             CompiledShader oldCompiledShader = _compiledShader;
             _compiledShader = CompiledShaderParser.Parse(lines);
 
-            // transfer Expanded values
-            if (oldCompiledShader.IsValid && HaveAllSameKeywords(oldCompiledShader, _compiledShader))
+            if (_expanded == null || _expanded.Length != _compiledShader.Variants.Length)
             {
-                for (int i = 0; i < _compiledShader.Variants.Length; i++)
+                _expanded = new bool[_compiledShader.Variants.Length];
+            }
+            else
+            {
+                // clear expanded values
+                if (!oldCompiledShader.IsValid || !HaveAllSameKeywords(oldCompiledShader, _compiledShader))
                 {
-                    _compiledShader.Variants[i].Expanded = oldCompiledShader.Variants[i].Expanded;
+                    Array.Clear(_expanded, 0, _expanded.Length);
                 }
             }
         }
