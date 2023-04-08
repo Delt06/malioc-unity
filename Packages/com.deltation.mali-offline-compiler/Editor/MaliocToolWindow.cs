@@ -24,14 +24,18 @@ namespace DELTation.MaliOfflineCompiler.Editor
         [SerializeField]
         private CompiledShader _compiledShader;
         [SerializeField]
+        private CompiledShader _baseline;
+        [SerializeField]
+        private bool _viewBaseline;
+        [SerializeField]
         private Vector2 _scrollPosition = Vector2.zero;
-        private GUIStyle _boxStyle;
+        private GUIStyle _baselineStyle;
         private bool[] _expanded;
         private GUIStyle _foldoutStyle;
 
         private void OnGUI()
         {
-            _boxStyle = new GUIStyle(GUI.skin.box)
+            _baselineStyle = new GUIStyle(GUI.skin.box)
             {
                 fontStyle = FontStyle.Bold,
                 richText = true,
@@ -42,6 +46,8 @@ namespace DELTation.MaliOfflineCompiler.Editor
                 richText = true,
             };
             _shader = (Shader) EditorGUILayout.ObjectField(new GUIContent("Shader"), _shader, typeof(Shader), false);
+
+            HandleKeyboard();
 
             if (GUILayout.Button("Analyze"))
             {
@@ -56,19 +62,72 @@ namespace DELTation.MaliOfflineCompiler.Editor
 
             if (_compiledShader.Variants.Length == 0)
             {
-                GUILayout.Box("The compiled shader does not have any variants.");
+                EditorGUILayout.HelpBox("The compiled shader does not have any variants.", MessageType.Warning);
                 return;
             }
 
+            GUILayout.BeginHorizontal();
+
+            EditorGUI.BeginDisabledGroup(_viewBaseline);
+            if (GUILayout.Button("Save Baseline"))
+            {
+                _baseline = _compiledShader;
+            }
+
+            EditorGUI.EndDisabledGroup();
+
+            _viewBaseline = GUILayout.Toggle(_viewBaseline, "View Baseline");
+
             _hardwareTier = (CompiledShaderHardwareTier) EditorGUILayout.EnumPopup(_hardwareTier);
+
+            GUILayout.EndHorizontal();
 
             _scrollPosition = GUILayout.BeginScrollView(_scrollPosition, false, true);
 
             _expanded ??= new bool[_compiledShader.Variants.Length];
 
-            for (int index = 0; index < _compiledShader.Variants.Length; index++)
+            if (_viewBaseline)
             {
-                ref CompiledShaderVariant variant = ref _compiledShader.Variants[index];
+                if (_baseline.IsValid)
+                {
+                    Color originalTint = GUI.color;
+                    GUI.color = Color.Lerp(originalTint, Color.red, 0.5f);
+                    DrawAllVariants(_baseline);
+                    GUI.color = originalTint;
+                }
+                else
+                {
+                    EditorGUILayout.HelpBox("The baseline has not been saved yet.", MessageType.Warning);
+                }
+            }
+            else
+            {
+                DrawAllVariants(_compiledShader);
+            }
+
+            GUILayout.EndScrollView();
+        }
+
+        private void HandleKeyboard()
+        {
+            Event current = Event.current;
+            if (current.type != EventType.KeyDown)
+            {
+                return;
+            }
+
+            if (current.keyCode == KeyCode.B)
+            {
+                _viewBaseline = !_viewBaseline;
+                current.Use();
+            }
+        }
+
+        private void DrawAllVariants(in CompiledShader shownShader)
+        {
+            for (int index = 0; index < shownShader.Variants.Length; index++)
+            {
+                ref CompiledShaderVariant variant = ref shownShader.Variants[index];
 
                 if (variant.HardwareTier != _hardwareTier)
                 {
@@ -85,7 +144,7 @@ namespace DELTation.MaliOfflineCompiler.Editor
                     if (!variant.ComputedMetrics)
                     {
                         variant.ComputedMetrics = true;
-                        ComputeMetrics(ref _compiledShader.Variants[index]);
+                        ComputeMetrics(ref shownShader.Variants[index]);
                     }
 
                     foreach (CompilerShaderStage stage in variant.Stages)
@@ -96,8 +155,6 @@ namespace DELTation.MaliOfflineCompiler.Editor
 
                 GUILayout.Space(8);
             }
-
-            GUILayout.EndScrollView();
         }
 
         private void DrawMetrics(in CompilerShaderStage stage)
@@ -109,7 +166,7 @@ namespace DELTation.MaliOfflineCompiler.Editor
                     CompiledShaderStageType.Pixel => "PS",
                     _ => throw new ArgumentOutOfRangeException(),
                 },
-                _boxStyle
+                _baselineStyle
             );
 
             switch (stage.StageType)
@@ -155,11 +212,11 @@ namespace DELTation.MaliOfflineCompiler.Editor
             }
 
             GUILayout.BeginVertical();
-            GUILayout.Box(header, _boxStyle);
+            GUILayout.Box(header, _baselineStyle);
 
             GUILayout.BeginHorizontal();
             {
-                GUILayout.BeginVertical(_boxStyle);
+                GUILayout.BeginVertical(_baselineStyle);
                 DrawLabelWithText("Work registers: ", metrics.WorkRegisters);
                 DrawLabelWithText("Uniform registers: ", metrics.UniformRegisters);
                 DrawLabelWithText("Stack spilling: ", metrics.StackSpilling);
@@ -167,7 +224,7 @@ namespace DELTation.MaliOfflineCompiler.Editor
                 GUILayout.EndVertical();
             }
             {
-                GUILayout.BeginVertical(_boxStyle);
+                GUILayout.BeginVertical(_baselineStyle);
                 DrawCyclesRow(string.Empty, "A", "LS", "T", "Bound");
                 DrawCyclesRow("Total instruction cycles:", metrics.TotalCycles);
                 DrawCyclesRow("Shortest path cycles:", metrics.ShortestCycles);
@@ -182,11 +239,11 @@ namespace DELTation.MaliOfflineCompiler.Editor
         private void DrawPixelShaderVariantMetrics(string header, in PixelShaderVariantMetrics metrics)
         {
             GUILayout.BeginVertical();
-            GUILayout.Box(header, _boxStyle);
+            GUILayout.Box(header, _baselineStyle);
 
             GUILayout.BeginHorizontal();
             {
-                GUILayout.BeginVertical(_boxStyle);
+                GUILayout.BeginVertical(_baselineStyle);
                 DrawLabelWithText("Work registers: ", metrics.WorkRegisters);
                 DrawLabelWithText("Uniform registers: ", metrics.UniformRegisters);
                 DrawLabelWithText("Stack spilling: ", metrics.StackSpilling);
@@ -194,7 +251,7 @@ namespace DELTation.MaliOfflineCompiler.Editor
                 GUILayout.EndVertical();
             }
             {
-                GUILayout.BeginVertical(_boxStyle);
+                GUILayout.BeginVertical(_baselineStyle);
                 DrawCyclesRow(string.Empty, "A", "LS", "V", "T", "Bound");
                 DrawCyclesRow("Total instruction cycles:", metrics.TotalCycles);
                 DrawCyclesRow("Shortest path cycles:", metrics.ShortestCycles);
@@ -209,9 +266,9 @@ namespace DELTation.MaliOfflineCompiler.Editor
         private void DrawVertexShaderProperties(in VertexShaderMetrics metrics)
         {
             GUILayout.BeginVertical();
-            GUILayout.Box("Shader properties", _boxStyle);
+            GUILayout.Box("Shader properties", _baselineStyle);
 
-            GUILayout.BeginVertical(_boxStyle);
+            GUILayout.BeginVertical(_baselineStyle);
             DrawLabelWithText("Has uniform computation:", metrics.HasUniformComputation);
             GUILayout.EndVertical();
 
@@ -221,9 +278,9 @@ namespace DELTation.MaliOfflineCompiler.Editor
         private void DrawPixelShaderProperties(in PixelShaderMetrics metrics)
         {
             GUILayout.BeginVertical();
-            GUILayout.Box("Shader properties", _boxStyle);
+            GUILayout.Box("Shader properties", _baselineStyle);
 
-            GUILayout.BeginVertical(_boxStyle);
+            GUILayout.BeginVertical(_baselineStyle);
             DrawLabelWithText("Has uniform computation:", metrics.HasUniformComputation);
             DrawLabelWithText("Has side-effects:", metrics.HasSideEffects);
             DrawLabelWithText("Modifies coverage:", metrics.ModifiesCoverage);
