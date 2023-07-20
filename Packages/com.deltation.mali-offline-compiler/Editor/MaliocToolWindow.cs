@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using DELTation.MaliOfflineCompiler.Editor.Compilation;
 using DELTation.MaliOfflineCompiler.Editor.Metrics;
@@ -17,6 +18,9 @@ namespace DELTation.MaliOfflineCompiler.Editor
 
         private const string CyclesFloatFormat = "F2";
 
+        private static readonly IEqualityComparer<string>
+            StringLowercaseEqualityComparerInstance = new StringLowercaseEqualityComparer();
+
         [SerializeField]
         private Shader _shader;
         [SerializeField]
@@ -29,6 +33,11 @@ namespace DELTation.MaliOfflineCompiler.Editor
         private bool _viewBaseline;
         [SerializeField]
         private Vector2 _scrollPosition = Vector2.zero;
+        [SerializeField]
+        private string _searchString;
+        [SerializeField]
+        private List<string> _searchKeywords = new();
+
         private GUIStyle _boxStyle;
         private bool[] _expanded;
         private GUIStyle _foldoutStyle;
@@ -88,6 +97,16 @@ namespace DELTation.MaliOfflineCompiler.Editor
 
             GUILayout.EndHorizontal();
 
+            {
+                EditorGUI.BeginChangeCheck();
+                _searchString = EditorGUILayout.TextField("Filter:", _searchString);
+                if (EditorGUI.EndChangeCheck())
+                {
+                    _searchKeywords.Clear();
+                    _searchKeywords.AddRange(_searchString.Split(' '));
+                }
+            }
+
             _expanded ??= new bool[_compiledShader.Variants.Length];
 
             if (_viewBaseline)
@@ -131,7 +150,7 @@ namespace DELTation.MaliOfflineCompiler.Editor
 
             GUILayout.Box(shownShader.Name ?? "Unknown Shader", _boxStyle);
             GUILayout.FlexibleSpace();
-            GUILayout.Label("Filter: ");
+            GUILayout.Label("Tier: ");
             _hardwareTier = (CompiledShaderHardwareTier) EditorGUILayout.EnumPopup(_hardwareTier);
 
             GUILayout.EndHorizontal();
@@ -142,7 +161,7 @@ namespace DELTation.MaliOfflineCompiler.Editor
             {
                 ref CompiledShaderVariant variant = ref shownShader.Variants[index];
 
-                if (variant.HardwareTier != _hardwareTier)
+                if (variant.HardwareTier != _hardwareTier || !HasAllKeywords(variant))
                 {
                     continue;
                 }
@@ -170,6 +189,24 @@ namespace DELTation.MaliOfflineCompiler.Editor
             }
 
             GUILayout.EndScrollView();
+        }
+
+        private bool HasAllKeywords(in CompiledShaderVariant variant)
+        {
+            if (_searchKeywords.Count == 0 || _searchKeywords[0] == string.Empty)
+            {
+                return true;
+            }
+
+            foreach (string searchKeyword in _searchKeywords)
+            {
+                if (!variant.Keywords.Contains(searchKeyword, StringLowercaseEqualityComparerInstance))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         private void DrawMetrics(in CompilerShaderStage stage)
@@ -505,6 +542,13 @@ namespace DELTation.MaliOfflineCompiler.Editor
             }
 
             return true;
+        }
+
+        private class StringLowercaseEqualityComparer : IEqualityComparer<string>
+        {
+            public bool Equals(string x, string y) => string.Equals(x, y, StringComparison.InvariantCultureIgnoreCase);
+
+            public int GetHashCode(string obj) => obj.GetHashCode();
         }
     }
 }
