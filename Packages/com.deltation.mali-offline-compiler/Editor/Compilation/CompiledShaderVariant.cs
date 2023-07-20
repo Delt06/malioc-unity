@@ -7,6 +7,8 @@ namespace DELTation.MaliOfflineCompiler.Editor.Compilation
     {
         public CompiledShaderHardwareTier HardwareTier;
         public string[] Keywords;
+        public string LightMode;
+        public string PassName;
         public CompilerShaderStage[] Stages;
         public bool ComputedMetrics;
     }

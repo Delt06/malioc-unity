@@ -166,8 +166,11 @@ namespace DELTation.MaliOfflineCompiler.Editor
                     continue;
                 }
 
-                string label = "Keywords: " +
-                               (variant.Keywords.Length == 0 ? "<none>" : string.Join(' ', variant.Keywords));
+                const string none = "<none>";
+                string keywords = variant.Keywords.Length == 0 ? none : string.Join(' ', variant.Keywords);
+                string passName = string.IsNullOrWhiteSpace(variant.PassName) ? none : variant.PassName;
+                string lightMode = string.IsNullOrWhiteSpace(variant.LightMode) ? none : variant.LightMode;
+                string label = $"Name: {passName} | LightMode: {lightMode} | Keywords: {keywords}";
                 ref bool expanded = ref _expanded[index];
                 expanded = EditorGUILayout.Foldout(expanded, label, _foldoutStyle);
 
@@ -200,7 +203,9 @@ namespace DELTation.MaliOfflineCompiler.Editor
 
             foreach (string searchKeyword in _searchKeywords)
             {
-                if (!variant.Keywords.Contains(searchKeyword, StringLowercaseEqualityComparerInstance))
+                if (!variant.Keywords.Contains(searchKeyword, StringLowercaseEqualityComparerInstance) &&
+                    !StringLowercaseEqualityComparerInstance.Equals(searchKeyword, variant.LightMode) &&
+                    !StringLowercaseEqualityComparerInstance.Equals(searchKeyword, variant.PassName))
                 {
                     return false;
                 }

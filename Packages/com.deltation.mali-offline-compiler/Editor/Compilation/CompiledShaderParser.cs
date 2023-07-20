@@ -24,10 +24,36 @@ namespace DELTation.MaliOfflineCompiler.Editor.Compilation
         {
             var variantsTempData = new List<VariantTempData>();
             var keywordsRegex = new Regex(@"\AKeywords: (<none>|.+)\z");
+            var passNameRegex = new Regex("Name \"(\\w*)\"");
+            var lightModeRegex = new Regex("\"LIGHTMODE\"=\"(\\w*)\"");
+            string currentLightMode = string.Empty;
+            string currentPassName = string.Empty;
 
             for (int index = 0; index < lines.Length - 1; index++)
             {
                 string line1 = lines[index];
+
+                if (line1.Contains("Pass {"))
+                {
+                    currentLightMode = string.Empty;
+                    currentPassName = string.Empty;
+                    continue;
+                }
+
+                Match lightModeMatch = lightModeRegex.Match(line1);
+                if (lightModeMatch.Success)
+                {
+                    currentLightMode = lightModeMatch.Groups[1].Value;
+                    continue;
+                }
+
+                Match passNameMatch = passNameRegex.Match(line1);
+                if (passNameMatch.Success)
+                {
+                    currentPassName = passNameMatch.Groups[1].Value;
+                    continue;
+                }
+
                 if (line1 != "//////////////////////////////////////////////////////")
                 {
                     continue;
@@ -43,6 +69,8 @@ namespace DELTation.MaliOfflineCompiler.Editor.Compilation
                 var variantTempData = new VariantTempData
                 {
                     FromLineIndex = index,
+                    LightMode = currentLightMode,
+                    PassName = currentPassName,
                 };
 
                 string keywords = keywordsMatch.Groups[1].Value;
@@ -111,6 +139,8 @@ namespace DELTation.MaliOfflineCompiler.Editor.Compilation
             return new CompiledShaderVariant
             {
                 Keywords = variantTempData.Keywords,
+                LightMode = variantTempData.LightMode,
+                PassName = variantTempData.PassName,
                 Stages = stages.ToArray(),
                 HardwareTier = (CompiledShaderHardwareTier) hardwareTier,
             };
@@ -174,6 +204,8 @@ namespace DELTation.MaliOfflineCompiler.Editor.Compilation
             public int FromLineIndex;
             public int ToLineIndex;
             public string[] Keywords;
+            public string LightMode;
+            public string PassName;
         }
     }
 }
