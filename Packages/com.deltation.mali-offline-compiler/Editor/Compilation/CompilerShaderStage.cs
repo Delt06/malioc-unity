@@ -1,5 +1,5 @@
 ﻿using System;
-using DELTation.MaliOfflineCompiler.Editor.Metrics;
+using DELTation.MaliOfflineCompiler.Editor.Models;
 
 namespace DELTation.MaliOfflineCompiler.Editor.Compilation
 {
@@ -8,7 +8,7 @@ namespace DELTation.MaliOfflineCompiler.Editor.Compilation
     {
         public CompiledShaderStageType StageType;
         public string[] Code;
-        public VertexShaderMetrics VertexShaderMetrics;
-        public PixelShaderMetrics PixelShaderMetrics;
+        public RuntimeMaliocShader PixelShaderMetrics;
+        public RuntimeMaliocShader VertexShaderMetrics;
     }
 }

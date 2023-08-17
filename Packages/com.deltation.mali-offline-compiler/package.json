@@ -1,14 +1,17 @@
 {
-  "name": "com.deltation.mali-offline-compiler",
-  "displayName": "Mali Offline Compiler",
-  "description": "In-editor shader analysis via Mali Offline Compiler (malioc).",
-  "version": "0.1.0",
-  "unity": "2021.3",
-  "unityRelease": "0f1",
-  "author": {
-    "name": "Vladislav Kantaev",
-    "email": "vvkantaev3@gmail.com",
-    "url": "https://deltation.tatar/"
-  },
-  "type": "tool"
+    "name": "com.deltation.mali-offline-compiler",
+    "displayName": "Mali Offline Compiler",
+    "description": "In-editor shader analysis via Mali Offline Compiler (malioc).",
+    "version": "0.1.0",
+    "unity": "2021.3",
+    "unityRelease": "0f1",
+    "author": {
+        "name": "Vladislav Kantaev",
+        "email": "vvkantaev3@gmail.com",
+        "url": "https://deltation.tatar/"
+    },
+    "dependencies": {
+        "com.unity.nuget.newtonsoft-json": "3.0.2"
+    },
+    "type": "tool"
 }
