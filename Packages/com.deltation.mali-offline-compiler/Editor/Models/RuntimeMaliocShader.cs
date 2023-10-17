@@ -9,6 +9,7 @@ namespace DELTation.MaliOfflineCompiler.Editor.Models
         [Serializable]
         public enum ShaderVariantPipelineType
         {
+            Null,
             Arithmetic,
             LoadStore,
             Varying,

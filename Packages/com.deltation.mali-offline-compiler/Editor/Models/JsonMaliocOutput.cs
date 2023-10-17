@@ -45,7 +45,7 @@ namespace DELTation.MaliOfflineCompiler.Editor.Models
         public class ShaderVariantCycles
         {
             public string[] bound_pipelines;
-            public float[] cycle_count;
+            public float?[] cycle_count;
         }
     }
 }

@@ -17,7 +17,11 @@ namespace DELTation.MaliOfflineCompiler.Editor.Parsing
                 throw new ArgumentNullException(nameof(json));
             }
 
-            JsonMaliocOutput jsonModel = JsonConvert.DeserializeObject<JsonMaliocOutput>(json);
+            var jsonSerializerSettings = new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore,
+            };
+            JsonMaliocOutput jsonModel = JsonConvert.DeserializeObject<JsonMaliocOutput>(json, jsonSerializerSettings);
             Assert.IsNotNull(jsonModel);
 
             Assert.IsTrue(jsonModel.shaders.Length == 1);
@@ -71,6 +75,7 @@ namespace DELTation.MaliOfflineCompiler.Editor.Parsing
                 "load_store" => ShaderVariantPipelineType.LoadStore,
                 "varying" => ShaderVariantPipelineType.Varying,
                 "texture" => ShaderVariantPipelineType.Texture,
+                null => ShaderVariantPipelineType.Null,
                 var _ => throw new ArgumentOutOfRangeException(nameof(text), text, "Invalid pipeline type."),
             };
 
@@ -78,7 +83,7 @@ namespace DELTation.MaliOfflineCompiler.Editor.Parsing
             JsonMaliocOutput.ShaderVariantCycles cycles) =>
             new()
             {
-                PipelineCycles = cycles.cycle_count.ToList(),
+                PipelineCycles = cycles.cycle_count.Select(f => f ?? 0).ToList(),
                 BoundPipeline = ParsePipelineType(cycles.bound_pipelines.First()),
             };
     }

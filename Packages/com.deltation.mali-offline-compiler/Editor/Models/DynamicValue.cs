@@ -8,6 +8,7 @@ namespace DELTation.MaliOfflineCompiler.Editor.Models
         public enum ValueType
         {
             Unknown,
+            Null,
             Float,
             Int,
             Bool,
@@ -30,6 +31,7 @@ namespace DELTation.MaliOfflineCompiler.Editor.Models
                 int i => (ValueType.Int, i, 0, false),
                 float f => (ValueType.Float, 0, f, false),
                 bool b => (ValueType.Bool, 0, 0, b),
+                null => (ValueType.Null, 0, 0, false),
                 var _ => throw new ArgumentOutOfRangeException(nameof(value),
                     $"Invalid object type: {value?.GetType()}"
                 ),
@@ -43,6 +45,7 @@ namespace DELTation.MaliOfflineCompiler.Editor.Models
                 ValueType.Float => Float.ToString("F2"),
                 ValueType.Int => Int.ToString(),
                 ValueType.Bool => Bool.ToString(),
+                ValueType.Null => "N/A",
                 _ => throw new ArgumentOutOfRangeException(),
             };
     }

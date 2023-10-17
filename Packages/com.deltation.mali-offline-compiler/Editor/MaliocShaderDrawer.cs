@@ -173,6 +173,7 @@ namespace DELTation.MaliOfflineCompiler.Editor
                 RuntimeMaliocShader.ShaderVariantPipelineType.LoadStore => "LS",
                 RuntimeMaliocShader.ShaderVariantPipelineType.Varying => "V",
                 RuntimeMaliocShader.ShaderVariantPipelineType.Texture => "T",
+                RuntimeMaliocShader.ShaderVariantPipelineType.Null => "N/A",
                 _ => throw new ArgumentOutOfRangeException(nameof(pipelineType), pipelineType, null),
             };
     }
