@@ -24,7 +24,7 @@ namespace DELTation.MaliOfflineCompiler.Editor
         [SerializeField]
         private Shader _shader;
         [SerializeField]
-        private CompiledShaderHardwareTier _hardwareTier = CompiledShaderHardwareTier.Tier1;
+        private CompiledShaderHardwareTier _hardwareTier = CompiledShaderHardwareTier.Unknown;
         [SerializeField]
         private CompiledShader _compiledShader;
         [SerializeField]

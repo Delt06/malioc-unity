@@ -134,8 +134,6 @@ namespace DELTation.MaliOfflineCompiler.Editor.Compilation
                 }
             }
 
-            Assert.IsTrue(hardwareTier >= 0);
-
             return new CompiledShaderVariant
             {
                 Keywords = variantTempData.Keywords,
